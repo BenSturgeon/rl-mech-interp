@@ -59,7 +59,7 @@ This indicates that a lot of the "planning" that the model would need to do was 
 
 If this is the case, this indicates that it should be possible to train probes that can detect the exact direction the agent needs to move towards, and if it is possible to intervene with these probes, it could be possible to show fairly advanced control over the model.
 
-However, something unique to the heist environment is the multiple goals that need to be reached one after another. One thing that would be a really great result is whether it is possible to get the model to pursue a different goal in the environment in a very clean way, rather than with the activation steering which is a very clumsy approach. If it's possible to show which goal its targeting from its weights and adjust this, this would be sufficient for me to go conclude the paper with this result. So that will be my initial target.
+However, something unique to the heist environment is the multiple goals that need to be reached one after another. One thing that would be a really great result is whether it is possible to get the model to pursue a different goal in the environment in a very clean way, rather than witsh the activation steering which is a very clumsy approach. If it's possible to show which goal its targeting from its weights and adjust this, this would be sufficient for me to go conclude the paper with this result. So that will be my initial target.
 
 It would appear that this should be possible just using the CNN layers, if the layers have very strong directional features. Alternatively it's possible that the thing Jan found might not exist in the CNN layers of the heist but can only be found in the FC layers of the network. It's also possible that using the SAEs would surface these features.
 
@@ -68,10 +68,17 @@ Though it's also worth noting that the guys in the RL planning paper found that 
 For now I won't be replicating the BImpala work, but I will also get Jon's feedback on this. It's possible that it's just a pareto improvement to work on BIMPALA since it has more interpretable qualities, and I can do all the same analyses in both cases.
 
 Potentially it's worth training either way as it won't take too long to do.
-## Interesting papers to follow up on:
+# Interesting papers to follow up on:
 [Understanding goal misgeneralisation in the procgen maze environment](https://www.alignmentforum.org/posts/vY9oE39tBupZLAyoC/localizing-goal-misgeneralization-in-a-maze-solving-policy)
 
 [Bimpala work](https://arxiv.org/html/2412.00944#:~:text=We%20used%20the%20ProcGen%20environment,29)
+
+### Paper notes Joseph Bloom Minigrid and the DT transformer:
+In [this](https://www.lesswrong.com/posts/JvQWbrbPjuvw4eqxv/a-mechanistic-interpretability-analysis-of-a-gridworld-agent) paper, Joseph examines MemoryDT, which is a decision transformer trained on the minigrid memory task, where it is shown a specific object and then needs to go and select the correct object from a collection. It's an autoregressive trajectory modelling transformer. This is a very large architectural change from what is going on with the Impala model. 
+
+In this case the model has to cross a gap where it can no longer see the original object and then select the correct object from a selection of options. It only obtains a reward when it chooses correctly. While crossing it needs to hold in its memory what the original object that it saw was.
+
+This makes the model an interesting candidate for interpretability because one would presume the target goal must be held quite clearly in memory, and be identifiable as the model goes about its business. It is also a simple environment which has some significant upsides. Possibly most importantly the nature of the agent is closest to possible LLM style agents because the model is an agent simulator, that simply samples from trajectories that are likely to lead to success. This is similar to how a GPT LLM is a simulator of different characters that can be elicited through prompting or biased with fine-tuning, and what makes them capable general agents.
 
 ## Concrete next steps:
 Result replication:
