@@ -54,11 +54,30 @@ Training probes to track the positions of the non-next entities in the environme
 
 
 ## Key working insights
-Jan Bentley was able to find a specific circuit in the convolutional layers of the impala model that 
+Jan Bentley was able to find a specific circuit in the convolutional layers of the impala model that activated strongly when the direction to go in was "up" and didn't activate when the cheese was in a similar spot but the agent would need to go in a different direction to get there. 
+This indicates that a lot of the "planning" that the model would need to do was already handled in the CNN layers, since it would need to have already determined the location, and the fact that it would need to move in a direction that would allow it to move around the corner to get to the goal.
 
+If this is the case, this indicates that it should be possible to train probes that can detect the exact direction the agent needs to move towards, and if it is possible to intervene with these probes, it could be possible to show fairly advanced control over the model.
 
+However, something unique to the heist environment is the multiple goals that need to be reached one after another. One thing that would be a really great result is whether it is possible to get the model to pursue a different goal in the environment in a very clean way, rather than with the activation steering which is a very clumsy approach. If it's possible to show which goal its targeting from its weights and adjust this, this would be sufficient for me to go conclude the paper with this result. So that will be my initial target.
+
+It would appear that this should be possible just using the CNN layers, if the layers have very strong directional features. Alternatively it's possible that the thing Jan found might not exist in the CNN layers of the heist but can only be found in the FC layers of the network. It's also possible that using the SAEs would surface these features.
+
+Though it's also worth noting that the guys in the RL planning paper found that the monosemanticity of the neurons did not significantly increase between the SAE and the raw layers of the model, and that the raw layers were actually very interpretable. It's still tbd whether that is the case in the heist model as well. Confirming whether or not this is the case should be one of the first things that I do.
+
+For now I won't be replicating the BImpala work, but I will also get Jon's feedback on this. It's possible that it's just a pareto improvement to work on BIMPALA since it has more interpretable qualities, and I can do all the same analyses in both cases.
+
+Potentially it's worth training either way as it won't take too long to do.
 ## Interesting papers to follow up on:
 [Understanding goal misgeneralisation in the procgen maze environment](https://www.alignmentforum.org/posts/vY9oE39tBupZLAyoC/localizing-goal-misgeneralization-in-a-maze-solving-policy)
 
 [Bimpala work](https://arxiv.org/html/2412.00944#:~:text=We%20used%20the%20ProcGen%20environment,29)
 
+## Concrete next steps:
+Result replication:
+- [ ] Complete the feature visualisation of the CNN SAE layers. 
+- [ ] Replicate whether it's possible to find these directional channels in the network.
+	- [ ] This will involve setting up scenarios where the next key is around a little corner in different orientations and see if there is a specific layer that activates more significantly in each case.
+- [ ] Replicate whether the SAEs are actually as monosemantic as the raw layers. 
+	- [ ] This will involve just running the feature vis and seeing if the layers are significantly more interpretable in the SAE case. I will also need to double check the paper to see exactly how they reach this result.
+- [ ] 
