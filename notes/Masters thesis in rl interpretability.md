@@ -59,7 +59,7 @@ This indicates that a lot of the "planning" that the model would need to do was 
 
 If this is the case, this indicates that it should be possible to train probes that can detect the exact direction the agent needs to move towards, and if it is possible to intervene with these probes, it could be possible to show fairly advanced control over the model.
 
-However, something unique to the heist environment is the multiple goals that need to be reached one after another. One thing that would be a really great result is whether it is possible to get the model to pursue a different goal in the environment in a very clean way, rather than witsh the activation steering which is a very clumsy approach. If it's possible to show which goal its targeting from its weights and adjust this, this would be sufficient for me to go conclude the paper with this result. So that will be my initial target.
+However, something unique to the heist environment is the multiple goals that need to be reached one after another. One thing that would be a really great result is whether it is possible to get the model to pursue a different goal in the environment in a very clean way, rather than with the activation steering which is a very clumsy approach. If it's possible to show which goal its targeting from its weights and adjust this, this would be sufficient for me to go conclude the paper with this result. So that will be my initial target.
 
 It would appear that this should be possible just using the CNN layers, if the layers have very strong directional features. Alternatively it's possible that the thing Jan found might not exist in the CNN layers of the heist but can only be found in the FC layers of the network. It's also possible that using the SAEs would surface these features.
 
@@ -68,6 +68,33 @@ Though it's also worth noting that the guys in the RL planning paper found that 
 For now I won't be replicating the BImpala work, but I will also get Jon's feedback on this. It's possible that it's just a pareto improvement to work on BIMPALA since it has more interpretable qualities, and I can do all the same analyses in both cases.
 
 Potentially it's worth training either way as it won't take too long to do.
+
+## SAE Feature visualisation experiment results
+Starting wordcount == 1600
+One of the best ways to determine what an SAE has learned is to try and visualise the features it has learned directly. During training the SAE is encouraged to develop channels that uniquely activate in a particular circumstance by penalising the total value of all aggregated activations in the encoder. This means that a particular signal is best sent by having as many layers produce no signal at all as possible, while a few channels in combination will activate at a given timestep, meaning they have to specialise in their function. 
+
+Continued ability to perform the original function of the network is typically maintained by expanding the total number of channels. While often a given channel may serve multiple functions due to the number of features that need to be captured being greater than the number of channels, expanding the number of channels allows a given feature to be captured and exclusively represented in a single channel.
+
+By visualising each neuron we can see what it has potentially learned. One of the most illuminating aspects of this is to expose dead neurons on the network, which we see a significant number of in the network (roughly 25%). This is typical in SAEs where for some reason some channels do not learn any feature. This can be because there are sufficient features encoded that the loss of reconstructing the network was met without needing to encode all of the original features, and, perhaps some of the less meaningful features could simply left out, or because there are in fact fewer learned features than there were channels in the network.
+
+We do in fact see quite striking visualisations from the SAE, though further work on tuning the colours would yield better results. These results are also significantly clearer in the SAE than they were in the original model.
+
+[[SAE feature visualisation results]]
+
+% Images aren't currently rendering and won't be uploaded for now
+
+I will refrain from speculating on the meaning of particular features currently, as it is difficult to determine exactly what each channel represents currently. 
+
+this investigation will require matching with samples from the environment like we see here.
+![[image (25).png]]
+
+Possible experiments that would be useful to run here would be trying to do feature visualisation on specific patches of images from the environment as well, given that this was so successful when sampling from the dataset and yielded such strong activations as well. If we could color correct from the environment correctly this would yield even stronger results.
+
+It would also be helpful to do the same with actual frames from the environment and see when each of the channels from the environment activates the most strongly and compare this to the base model. If we could gather large enough sets of samples this could yield very useful patterns. A similar approach could likely be used on the MLP layers as well.
+
+
+
+
 # Interesting papers to follow up on:
 [Understanding goal misgeneralisation in the procgen maze environment](https://www.alignmentforum.org/posts/vY9oE39tBupZLAyoC/localizing-goal-misgeneralization-in-a-maze-solving-policy)
 
@@ -82,9 +109,12 @@ This makes the model an interesting candidate for interpretability because one w
 
 ## Concrete next steps:
 Result replication:
-- [ ] Complete the feature visualisation of the CNN SAE layers. 
+- [x] Complete the feature visualisation of the CNN SAE layers. 
 - [ ] Replicate whether it's possible to find these directional channels in the network.
 	- [ ] This will involve setting up scenarios where the next key is around a little corner in different orientations and see if there is a specific layer that activates more significantly in each case.
 - [ ] Replicate whether the SAEs are actually as monosemantic as the raw layers. 
 	- [ ] This will involve just running the feature vis and seeing if the layers are significantly more interpretable in the SAE case. I will also need to double check the paper to see exactly how they reach this result.
-- [ ] 
+- [ ] Do feature visualisation on small patches of the channel instead
+- [ ] Do an environment dataset image sampling of strongest activating channels in the SAE
+	- [ ] Do this with patches
+	- [ ] Do this with whole images
