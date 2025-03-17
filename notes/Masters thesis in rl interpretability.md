@@ -93,6 +93,18 @@ Possible experiments that would be useful to run here would be trying to do feat
 It would also be helpful to do the same with actual frames from the environment and see when each of the channels from the environment activates the most strongly and compare this to the base model. If we could gather large enough sets of samples this could yield very useful patterns. A similar approach could likely be used on the MLP layers as well.
 
 
+## Applying decorrelation to enhance visual features
+
+I found that applying the color decorrelation significantly improved the quality of the results, though their actual interpretability is still fairly questionable. This is definitely superior to what I was getting before so any future feature visualisation will make use of this.
+
+## Experiments in patch visualisation for the SAE.
+This was very disappointing as the results were fairly uniform across features in the SAE. I found that there was also little difference between the decorrelated results and the standard results.
+
+## Finding max activating patches in the SAE 
+This worked pretty great, which was not surprising. I am not sure if it's much better than in the standard cases but the results are fairly clear at least. I think this is probably the most promising direction at this point.
+
+## Next steps
+I have now pushed the feature visualisation stuff pretty near to its limits. Now I think the right direction is to try and explore how different sets of SAE features work together. In particular, trying to capture if there is an SAE feature that correlates with the agent needing to move up, down, down, left and right, and also if we can identify a specific channel for each of the different entities and potentially switch between them.
 
 
 # Interesting papers to follow up on:
@@ -112,9 +124,13 @@ Result replication:
 - [x] Complete the feature visualisation of the CNN SAE layers. 
 - [ ] Replicate whether it's possible to find these directional channels in the network.
 	- [ ] This will involve setting up scenarios where the next key is around a little corner in different orientations and see if there is a specific layer that activates more significantly in each case.
-- [ ] Replicate whether the SAEs are actually as monosemantic as the raw layers. 
-	- [ ] This will involve just running the feature vis and seeing if the layers are significantly more interpretable in the SAE case. I will also need to double check the paper to see exactly how they reach this result.
-- [ ] Do feature visualisation on small patches of the channel instead
+- [x] Replicate whether the SAEs are actually as monosemantic as the raw layers. 
+	- [x] This will involve just running the feature vis and seeing if the layers are significantly more interpretable in the SAE case. I will also need to double check the paper to see exactly how they reach this result.
+- [x] Do feature visualisation on small patches of the channel instead
 - [ ] Do an environment dataset image sampling of strongest activating channels in the SAE
-	- [ ] Do this with patches
+	- [x] Do this with patches
 	- [ ] Do this with whole images
+- [ ] Identify specific things that each SAE channel is responsible for
+	- [ ] Different directions that need to be taken
+	- [ ] different entities to be pursued
+	- [ ] Explore activation combinations
