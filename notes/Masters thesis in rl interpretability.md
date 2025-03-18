@@ -93,6 +93,32 @@ Possible experiments that would be useful to run here would be trying to do feat
 It would also be helpful to do the same with actual frames from the environment and see when each of the channels from the environment activates the most strongly and compare this to the base model. If we could gather large enough sets of samples this could yield very useful patterns. A similar approach could likely be used on the MLP layers as well.
 
 
+
+## Next steps
+I have now pushed the feature visualisation stuff pretty near to its limits. Now I think the right direction is to try and explore how different sets of SAE features work together. In particular, trying to capture if there is an SAE feature that correlates with the agent needing to move up, down, down, left and right, and also if we can identify a specific channel for each of the different entities and potentially switch between them.
+
+## A more complete write up of the visualisation results
+Feature visualisation is an extremely useful tool in mechanistic interpretability due to it giving you some direct insight into what a particular part of the network is doing. It can be difficult however, due to implementation challenges, as well as misleading in terms of what is actually happening. It can be useful as an initial indicator for signs of life when doing mechanistic interpretability work. 
+
+## Feature visualisation methodology
+There are two main approaches to feature visualisation, synthetic visualisation and finding maximally activating samples. Each has different strengths and weaknesses. Synthetic visualisation can yield more precise reflections of exactly what a channel is visualising, while max activating samples can be much more clearly interpretable.
+
+Synthetic visualisation involves using gradient descent to iteratively adjust an input image with the optimisation target of getting the strongest possible average activation across a channel in a target channel, layer our single neuron. In our investigation we focused only on whole channels. This means we would sum the strength of activations across the width and height of a given channel and then multiply the mean activation by -1 as our loss, which we would then try and minimise.
+
+Max activation sampling involves selecting samples from a dataset that produce the highest mean activation score across a given layer. To avoid duplicates we apply a diversity score which works as a penalty against selecting examples that are very similar to existing samples we've selected using a cosine similarity score. This diversity score can be applied as a variable weighting to indicate the importance of diversity.
+
+We apply a variation of max activation sampling where we  samples patches from an image to identify specific features that strongly activate specific parts of a channel. To do this we pass inputs from the environment through the model and then identify when a specific part neuron in a channel is very strongly activating. We then assess where there is a patch in the channel that has an unusually high average activation and then select this area within the original image to visualise the region. We then rescale the patches so they are all the same size. The same diversity score as above is also applied.
+
+Our synthetic visualisation is enhanced by following state of the art techniques to improve the fidelity of the results such as applying jitter, rotations, and other transformations, and by applying a process to decorrelate the visualisations from each other in the colour spectrum. This is because when trying to develop maximally activating inputs there is significant overlap between when a certain colour is activating a part of the image and part of the strength of the activation is from a correlation with other nearby colours in the rgb spectrum. By first decorrelating our image, essentially whitening the image we are able to individually maximise for each colour, and then recolour the images according to what the actual colours would be in the environment which gives us a more true to life visualisation.
+
+
+## Feature visualisation results
+We find that the SAE does provide significantly more clear visualisations than in the original model. where a great deal of the visualisations primarily consist of noise.
+
+Compare the fidelity of features between the channels in the SAE with the raw channels in the network. There is clearly some specialisation in the SAE channels, and the presence of dead neurons is also indicative that our SAE is working as expected, as often there is simply not sufficient need for a particular feature to be encoded to embed itself into a feature. Sometimes the cost of integrating into another channel is sufficient for it to accept the sparsity penalty, while in other cases the feature itself may simply not be important enough. Dead neurons in SAEs are very common and thus are some confirmation that our SAE is working as expected.
+
+
+
 ## Applying decorrelation to enhance visual features
 
 I found that applying the color decorrelation significantly improved the quality of the results, though their actual interpretability is still fairly questionable. This is definitely superior to what I was getting before so any future feature visualisation will make use of this.
@@ -102,9 +128,6 @@ This was very disappointing as the results were fairly uniform across features i
 
 ## Finding max activating patches in the SAE 
 This worked pretty great, which was not surprising. I am not sure if it's much better than in the standard cases but the results are fairly clear at least. I think this is probably the most promising direction at this point.
-
-## Next steps
-I have now pushed the feature visualisation stuff pretty near to its limits. Now I think the right direction is to try and explore how different sets of SAE features work together. In particular, trying to capture if there is an SAE feature that correlates with the agent needing to move up, down, down, left and right, and also if we can identify a specific channel for each of the different entities and potentially switch between them.
 
 
 # Interesting papers to follow up on:
