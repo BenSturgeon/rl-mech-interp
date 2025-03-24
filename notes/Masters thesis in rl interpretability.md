@@ -119,15 +119,33 @@ Compare the fidelity of features between the channels in the SAE with the raw ch
 
 
 
-## Applying decorrelation to enhance visual features
+### Applying decorrelation to enhance visual features
 
 I found that applying the color decorrelation significantly improved the quality of the results, though their actual interpretability is still fairly questionable. This is definitely superior to what I was getting before so any future feature visualisation will make use of this.
 
-## Experiments in patch visualisation for the SAE.
+### Experiments in patch visualisation for the SAE.
 This was very disappointing as the results were fairly uniform across features in the SAE. I found that there was also little difference between the decorrelated results and the standard results.
 
-## Finding max activating patches in the SAE 
+### Finding max activating patches in the SAE 
 This worked pretty great, which was not surprising. I am not sure if it's much better than in the standard cases but the results are fairly clear at least. I think this is probably the most promising direction at this point.
+
+
+## Activation manipulation
+One key experiment was to try and achieve control of the network by modifying a single channel in the network as they were able to do in the original maze solving network paper by Turntrout et al.
+
+To work towards achieving this, it was necessary to identify channels that seemed to track a destination that the model was heading towards. In some sense it seems very necessary that the model be able do identify far off destinations to move towards in order to solve the maze, and it would need to do this from an array of different entities that it would need to target at different times (the keys).
+
+The simplest method I could think of for doing this was to simply move different target entities around while looking at the activations and seeing how they might change. To achieve this we go in and modify the environment directly, and then create a sequence of mazes with the object of interest moving in a clockwise pattern around the maze. We can then just see which channels seem to most closely track different entities. Of particular interest were channels that tracked multiple entities closely. 
+
+Channel 95 seemed to do this quite closely. It would track each key as it was moved around the maze. However, these results can be difficult to trust as they vary depending on the position of the player relative to the object. 
+
+This is in contrast to the results of Turntrout et al where they found that the model had a very specific channel that would very consistently track the position of the cheese. This model is significantly less transparent in this regard as we see that patterns tracking specific entities seem to change depending on a range of factors such as the player being in a certain location on the map. 
+
+This was the key motivation to train the sparse autoencoder, in the hope that it would concentrate the role of tracking entities into more clearly identifiable channels.
+
+To test whether we could find a specific channel that would closely track the current objective, we created a new test that allowed us to intervene on a specific channel at a specific point to see if we could alter the behaviour predictably.
+
+
 
 
 # Interesting papers to follow up on:
